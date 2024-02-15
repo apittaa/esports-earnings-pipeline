@@ -9,7 +9,7 @@ terraform {
 }
 
 provider "google" {
-  project = var.PROJECT_ID
-  region = var.REGION
-  credentials = file("../${var.SERVICE_ACCOUNT_CREDENTIAL_PATH}")  # to access the credentials from parent folder
+  project = var.GCP_PROJECT_ID
+  region = var.GCP_REGION
+  credentials = file("../${var.LOCAL_SERVICE_ACCOUNT_FILE_PATH}")  # to access the credentials from parent folder
 }
