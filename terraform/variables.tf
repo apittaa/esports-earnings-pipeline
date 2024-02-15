@@ -34,6 +34,36 @@ variable "SERVICE_ACCOUNT_CREDENTIAL_PATH" {
     type = string
 }
 
+variable "COMPUTE_ENGINE_NAME" {
+    description = "Compute engine name"
+    type = string
+}
+
+variable "COMPUTE_ENGINE_MACHINE_TYPE" {
+    description = "Compute engine type"
+    type = string
+}
+
+variable "COMPUTE_ENGINE_MACHINE_IMAGE" {
+    description = "Compute engine image"
+    type = string
+}
+variable "COMPUTE_ENGINE_ZONE" {
+    description = "Compute engine zone"
+    type = string
+  
+}
+
+variable "COMPUTE_ENGINE_SSH_USER" {
+    description = "Compute engine ssh user"
+    type = string
+}
+
+variable "SSH_PUB_KEY_FILE" {
+    description = "Compute engine ssh pub key file"
+    type = string
+}
+
 # BIGQUERY VARIABLES - DATASETS
 variable "DATASET_BRONZE" {
     description = "Dataset name to store bronze data"
