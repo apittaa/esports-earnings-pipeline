@@ -161,3 +161,6 @@ cython_debug/
 
 # Data
 data/
+
+# GCP credentials
+esports_pipeline_google_credentials.json
