@@ -1,8 +1,8 @@
 # GCS
 # Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket
 resource "google_storage_bucket" "data-lake-bucket" {
-  name          = "${var.GCS_BUCKET_NAME}-${var.GCP_PROJECT_ID}"
-  location      = var.GCP_REGION
+  name          = "${var.BUCKET_NAME}-${var.PROJECT_ID}"
+  location      = var.REGION
 
   # Optional, but recommended settings:
   storage_class = var.STORAGE_CLASS

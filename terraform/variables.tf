@@ -1,10 +1,10 @@
-variable "API_KEY" {}
-variable "GCP_PROJECT_ID" {}
-variable "GCP_SERVICE_ACCOUNT_NAME" {}
-variable "GCP_REGION" {}
-variable "GCP_ZONE" {}
-variable "GCS_BUCKET_NAME" {}
-variable "LOCAL_SERVICE_ACCOUNT_FILE_PATH" {}
+# passed in by env vars (TF_VAR)
+variable "PROJECT_ID" {}
+variable "SERVICE_ACCOUNT_NAME" {}
+variable "REGION" {}
+variable "ZONE" {}
+variable "BUCKET_NAME" {}
+variable "SERVICE_ACCOUNT_CREDENTIAL_PATH" {}
 variable "STORAGE_CLASS" {
   description = "Storage class type for your bucket. Check official docs for more info."
   default = "STANDARD"

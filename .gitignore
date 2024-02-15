@@ -163,4 +163,7 @@ cython_debug/
 data/
 
 # GCP credentials
-esports_pipeline_google_credentials.json
+credentials/
+
+# Terraform environment variables
+terraform/terraform.tfvars
