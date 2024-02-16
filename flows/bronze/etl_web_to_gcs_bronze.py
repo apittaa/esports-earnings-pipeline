@@ -249,3 +249,28 @@ def create_games_genre_df(spark: pyspark):
 
     path = write_to_local(df, "esports_games_genre")
     write_to_gcs(path)
+
+
+@flow()
+def etl_web_to_gcs() -> None:
+    """The main ETL function"""  
+    # Retrieve the API key from the .env file
+    load_dotenv()
+    API_KEY = os.getenv("API_KEY")
+
+    # Create a SparkSession
+    spark = SparkSession.builder \
+        .appName("esports_tournaments_bronze") \
+        .config("spark.executor.memory", "64g") \
+        .getOrCreate()
+    
+    get_tournaments_data(spark, api_key=API_KEY)
+    get_games_awarding_prize_money_data(spark, api_key=API_KEY)
+    create_games_genre_df(spark)
+    
+    # End the SparkSession
+    spark.stop()
+    
+
+if __name__ == '__main__':
+    etl_web_to_gcs()
