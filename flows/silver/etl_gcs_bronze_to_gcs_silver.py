@@ -3,7 +3,7 @@ from pathlib import Path
 from delta import *
 from delta.tables import *
 
-from esports_schema import ESPORTS_TOURNAMENTS_TYPES, ESPORTS_GAMES_GENRE_TYPES, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES
+from esports_schemas import ESPORTS_TOURNAMENTS_TYPES, ESPORTS_GAMES_GENRE_TYPES, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES
 
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
@@ -18,7 +18,7 @@ from pyspark.sql.types import *
 def extract_from_gcs(dataset_file: str) -> str:
     """Download data from GCS"""
     gcs_path = f"data/bronze/{dataset_file}"
-    local_path = f""
+    local_path = ""
     gcs_block = GcsBucket.load("esports")
     gcs_block.get_directory(
         from_path=gcs_path,
@@ -50,7 +50,7 @@ def write_to_gcs(path: Path) -> None:
 
 @task()
 def transform_columns_type(df: DataFrame, df_name: str, column_types: dict) -> DataFrame:
-    """Transform columns type"""   
+    """Transform columns type"""
     for col_name, col_type in column_types.items():
         if df_name == "esports_tournaments" and col_name == 'StartDate':
             df = df.withColumn(col_name, F.when((df[col_name] == '0202-05-07') & (df['GameId'] == 785), '2022-05-07').otherwise(df[col_name]))
@@ -86,11 +86,13 @@ def etl_gcs_bronze_to_gcs_silver() -> None:
     spark = configure_spark_with_delta_pip(builder).getOrCreate()
     spark.sparkContext.setLogLevel("ERROR")
     
-    dfs = {'esports_tournaments': ESPORTS_TOURNAMENTS_TYPES,
-           'esports_games_genre': ESPORTS_GAMES_GENRE_TYPES,
-           'esports_games_awarding_prize_money': ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES}
+    dfs = {
+        'esports_tournaments': ESPORTS_TOURNAMENTS_TYPES,
+        'esports_games_genre': ESPORTS_GAMES_GENRE_TYPES,
+        'esports_games_awarding_prize_money': ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES
+           }
     
-    for df_name, df_types in dfs.items():  
+    for df_name, df_types in dfs.items():
         bronze_path = extract_from_gcs(df_name)
         cleaned_df = clean_data(spark, bronze_path)
         transformed_df = transform_columns_type(cleaned_df, df_name, df_types)
