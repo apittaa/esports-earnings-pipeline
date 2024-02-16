@@ -58,3 +58,18 @@ def transform_columns_type(df: DataFrame, df_name: str, column_types: dict) -> D
         else:
             df = df.withColumn(col_name, df[col_name].cast(col_type))
     return df
+
+
+@task()    
+def clean_data(spark: pyspark, path: str) -> DataFrame:
+    """Clean data"""
+    df = spark.read.format('parquet').load(path)
+    print(f"Pre - na rows: {df.count() - df.na.drop().count()}")
+    print(f"Pre - duplicated rows: {df.count() - df.dropDuplicates().count()}")
+    cleaned_df = df.na.drop().dropDuplicates()
+    print(f"Pos - na rows: {cleaned_df.count() - cleaned_df.na.drop().count()}")
+    print(f"Pos - duplicated rows: {cleaned_df.count() - cleaned_df.dropDuplicates().count()}")
+    
+    return cleaned_df
+
+
