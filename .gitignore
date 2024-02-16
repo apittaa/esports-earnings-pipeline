@@ -167,3 +167,6 @@ credentials/
 
 # Terraform environment variables
 terraform/terraform.tfvars
+
+# VsCode
+.vscode/
