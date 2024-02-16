@@ -216,3 +216,36 @@ def get_games_genre_data() -> list:
     game_ids = [int(match.group(1)) for link in game_links if (match := re.compile(r'^/games/(\d+)').match(link.get('href')))]
     
     return [genre_titles, genre_num, game_titles, game_ids]
+
+
+@task()
+def create_games_genre_df(spark: pyspark):
+    """Create a DataFrame from the list of dictionaries."""
+    
+    # Add the get_data function to get the data
+    genre_titles, genre_num, game_titles, game_ids = get_games_genre_data()
+    
+    # Initialize an empty list to store dictionaries
+    games_genre_data = []
+
+    # Iterate through the pairs of genre titles and game boxes
+    position = 0
+    for genre_title, num_games in zip(genre_titles, genre_num):
+        game_titles_list = game_titles[position:position + num_games]
+        game_ids_list = game_ids[position:position + num_games]
+        
+        # Create a dictionary for each game and add it to the data list
+        for game_title, game_id in zip(game_titles_list, game_ids_list):
+            games_genre_data.append({'Genre': genre_title, 'GameName': game_title, 'GameId': game_id})
+        
+        position += num_games
+    
+    data = pd.DataFrame(games_genre_data)
+
+    if data.empty:
+        return None
+    else:
+        df = spark.createDataFrame(data)
+
+    path = write_to_local(df, "esports_games_genre")
+    write_to_gcs(path)
