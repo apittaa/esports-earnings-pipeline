@@ -18,7 +18,6 @@ from pyspark.sql import SparkSession, DataFrame
 import pyspark.sql.functions as F
 
 
-# Create a function to retrieve the offset from a file
 def write_to_local(df: DataFrame, dataset_file: str) -> str:
     """Get the offset from cloud storage."""
     local_path = f"../../data/bronze/{dataset_file}"
@@ -67,7 +66,6 @@ def write_tournament_offset(offset: int) -> None:
 
 
 @task(retries=3)
-# Refactor the code in the previous cell into a function
 def get_tournaments_data(spark: pyspark, api_key: str) -> None:
     """Retrieve data from the API."""
     
@@ -126,7 +124,6 @@ def get_tournaments_data(spark: pyspark, api_key: str) -> None:
     write_to_gcs(path)
 
 
-# Create a function to retrieve game_ids from a file
 def get_games_ids(spark: pyspark) -> list:
     """Get the game_ids from a file."""
     
@@ -137,3 +134,64 @@ def get_games_ids(spark: pyspark) -> list:
     game_ids = parquet_data.select('GameId').distinct().rdd.flatMap(lambda x: x).collect()
     
     return game_ids
+
+
+@task(retries=3)
+def get_games_awarding_prize_money_data(spark: pyspark, api_key: str) -> None:
+    """Retrieve game data from the API."""
+
+    # Disable warnings
+    urllib3.disable_warnings()
+    
+    # Construct the URL for the current game ID
+    games_endpoint = "http://api.esportsearnings.com/v0/LookupGameById"
+
+    # Initialize the list to store game data
+    prize_money_data = []
+    
+    # Add the game_ids function to get the game_ids
+    games_ids = get_games_ids(spark)
+
+    for game_id in games_ids:
+
+        # Set up the request parameters
+        params = {
+            "apikey": api_key,
+            "gameid": game_id,
+        }   
+
+        while True:
+            try:
+                # Send a GET request to the API
+                response = requests.get(games_endpoint, params=params, verify=False)
+
+                # Check if the request was successful (status code 200)
+                if response.status_code == 200:
+                    # Check if response content is b'' (empty bytes)
+                    if response.content == b'':
+                        print("No more data to retrieve")
+                        break
+                    # Parse the JSON response
+                    data = response.json()
+                    # Add the GameId to the data
+                    data["GameId"] = game_id
+                    # Append the data to the list of data entries
+                    prize_money_data.append(data)
+                    # Print the status
+                    print(f"Processed game ID {game_id}")
+                    break
+                else:
+                    logging.error(f"Request for game ID {game_id} failed with status code {response.status_code}")
+            except requests.exceptions.RequestException as e:
+                # Handle connection and request exceptions
+                logging.error(f"Request error for game ID {game_id}: {e}")
+
+    data = pd.DataFrame(prize_money_data)
+    
+    if data.empty:
+        return None
+    else:
+        df = spark.createDataFrame(data)
+
+    path = write_to_local(df, "esports_games_awarding_prize_money")
+    write_to_gcs(path)
