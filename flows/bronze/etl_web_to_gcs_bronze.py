@@ -20,8 +20,8 @@ import pyspark.sql.functions as F
 
 def write_to_local(df: DataFrame, dataset_file: str) -> str:
     """Get the offset from cloud storage."""
-    local_path = f"../../data/bronze/{dataset_file}"
-    path = f"../../data/bronze/{dataset_file}"
+    local_path = f"data/bronze/{dataset_file}"
+    path = f"data/bronze/{dataset_file}"
     
     if dataset_file == "esports_tournaments":
         df.coalesce(1).write.format("parquet").option("header", "true").mode("append").save(local_path)
@@ -45,9 +45,9 @@ def get_tournament_offset() -> int:
     try:
         gcs_block = GcsBucket.load('esports')
         gcs_block.download_object_to_path(
-            from_path='../../data/bronze/offset/offset.parquet',
-            to_path='../../data/bronze/offset/offset.parquet')
-        with open("../../data/bronze/offset/offset.parquet", "r") as offset_file:
+            from_path='data/bronze/offset/offset.parquet',
+            to_path='data/bronze/offset/offset.parquet')
+        with open("data/bronze/offset/offset.parquet", "r") as offset_file:
             offset = int(offset_file.read())
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -56,12 +56,12 @@ def get_tournament_offset() -> int:
 
 
 def write_tournament_offset(offset: int) -> None:
-    with open("../../data/bronze/offset/offset.parquet", "w") as offset_file:
+    with open("data/bronze/offset/offset.parquet", "w") as offset_file:
         offset_file.write(str(offset))
     gcs_block = GcsBucket.load("esports")
     gcs_block.upload_from_folder(
-        from_folder='../../data/bronze/offset',
-        to_folder='../../data/bronze/offset'
+        from_folder='data/bronze/offset',
+        to_folder='data/bronze/offset'
     )
 
 
@@ -128,7 +128,7 @@ def get_games_ids(spark: pyspark) -> list:
     """Get the game_ids from a file."""
     
     # Read the parquet file to obtain the game_id values
-    parquet_data = spark.read.format('parquet').load('/../..data/bronze/esports_tournaments')
+    parquet_data = spark.read.format('parquet').load('data/bronze/esports_tournaments')
 
     # Extract the game_id column values into game_ids
     game_ids = parquet_data.select('GameId').distinct().rdd.flatMap(lambda x: x).collect()
