@@ -47,3 +47,14 @@ def write_to_gcs(path: Path) -> None:
         to_folder=path
     )
 
+
+@task()
+def transform_columns_type(df: DataFrame, df_name: str, column_types: dict) -> DataFrame:
+    """Transform columns type"""   
+    for col_name, col_type in column_types.items():
+        if df_name == "esports_tournaments" and col_name == 'StartDate':
+            df = df.withColumn(col_name, F.when((df[col_name] == '0202-05-07') & (df['GameId'] == 785), '2022-05-07').otherwise(df[col_name]))
+            df = df.withColumn(col_name, df[col_name].cast(col_type))
+        else:
+            df = df.withColumn(col_name, df[col_name].cast(col_type))
+    return df
