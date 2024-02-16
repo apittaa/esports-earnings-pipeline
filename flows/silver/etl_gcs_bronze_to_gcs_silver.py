@@ -60,7 +60,7 @@ def transform_columns_type(df: DataFrame, df_name: str, column_types: dict) -> D
     return df
 
 
-@task()    
+@task()
 def clean_data(spark: pyspark, path: str) -> DataFrame:
     """Clean data"""
     df = spark.read.format('parquet').load(path)
@@ -73,3 +73,30 @@ def clean_data(spark: pyspark, path: str) -> DataFrame:
     return cleaned_df
 
 
+@flow()
+def etl_gcs_bronze_to_gcs_silver() -> None:
+    """The main ETL function""" 
+
+    #  Create a spark session with Delta
+    builder = pyspark.sql.SparkSession.builder.appName("esports_tournaments_silver") \
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+
+    # Create spark context
+    spark = configure_spark_with_delta_pip(builder).getOrCreate()
+    spark.sparkContext.setLogLevel("ERROR")
+    
+    dfs = {'esports_tournaments': ESPORTS_TOURNAMENTS_TYPES,
+           'esports_games_genre': ESPORTS_GAMES_GENRE_TYPES,
+           'esports_games_awarding_prize_money': ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES}
+    
+    for df_name, df_types in dfs.items():  
+        bronze_path = extract_from_gcs(df_name)
+        cleaned_df = clean_data(spark, bronze_path)
+        transformed_df = transform_columns_type(cleaned_df, df_name, df_types)
+        silver_path = write_to_local(transformed_df, df_name)
+        write_to_gcs(silver_path)
+
+
+if __name__ == '__main__':
+    etl_gcs_bronze_to_gcs_silver()
