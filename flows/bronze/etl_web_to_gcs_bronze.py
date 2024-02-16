@@ -124,4 +124,16 @@ def get_tournaments_data(spark: pyspark, api_key: str) -> None:
    
     path = write_to_local(df, "esports_tournaments")
     write_to_gcs(path)
+
+
+# Create a function to retrieve game_ids from a file
+def get_games_ids(spark: pyspark) -> list:
+    """Get the game_ids from a file."""
     
+    # Read the parquet file to obtain the game_id values
+    parquet_data = spark.read.format('parquet').load('/../..data/bronze/esports_tournaments')
+
+    # Extract the game_id column values into game_ids
+    game_ids = parquet_data.select('GameId').distinct().rdd.flatMap(lambda x: x).collect()
+    
+    return game_ids
