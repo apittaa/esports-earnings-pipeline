@@ -195,3 +195,24 @@ def get_games_awarding_prize_money_data(spark: pyspark, api_key: str) -> None:
 
     path = write_to_local(df, "esports_games_awarding_prize_money")
     write_to_gcs(path)
+
+
+def get_games_genre_data() -> list:
+    """Get data from the website."""
+    games_genre_endpoint = 'https://www.esportsearnings.com/games/browse-by-genre'
+    html = requests.get(games_genre_endpoint).text
+    soup = BeautifulSoup(html, 'html.parser')
+
+    # Find all genre titles, game statistics, and game boxes
+    genre_titles = soup.find_all('span', class_='games_main_genre_title')
+    genre_stats = soup.find_all('span', class_='games_main_genre_stats')
+    game_boxes = soup.find_all('div', class_='games_main_game_box')
+    game_links = soup.find_all('a')
+
+    # Extract text and statistics as lists
+    genre_titles = [genre_title.text for genre_title in genre_titles]
+    genre_num = [int(re.search(r'\d+', genre_stat.text).group()) for genre_stat in genre_stats]
+    game_titles = [game_box['title'] for game_box in game_boxes if 'title' in game_box.attrs]
+    game_ids = [int(match.group(1)) for link in game_links if (match := re.compile(r'^/games/(\d+)').match(link.get('href')))]
+    
+    return [genre_titles, genre_num, game_titles, game_ids]
