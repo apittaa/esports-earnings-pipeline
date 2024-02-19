@@ -27,7 +27,7 @@ def wite_to_bq(spark: pyspark, path: Path, df_name: str) -> None:
     df = spark.read.format('delta').load(path)
     df.write.format("bigquery") \
             .option("writeMethod", "direct") \
-            .option('table', f'esports_data_all.{df_name}') \
+            .option('table', f'esports_silver.{df_name}') \
             .mode('overwrite') \
             .save()
 
@@ -53,6 +53,9 @@ def etl_gcs_silver_to_bq():
     for df_name in dfs_name:
         path = extract_from_gcs(df_name)
         wite_to_bq(spark, path, df_name)
+        
+    # End spark session
+    spark.stop()
 
 
 if __name__ == '__main__':
