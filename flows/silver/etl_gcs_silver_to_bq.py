@@ -31,9 +31,10 @@ def wite_to_bq(spark: pyspark, path: Path, df_name: str) -> None:
             .mode('overwrite') \
             .save()
 
+
 @flow()
 def etl_gcs_silver_to_bq():
-    """The main ETL function"""  
+    """The main ETL function"""
    
     builder = pyspark.sql.SparkSession.builder.appName("test") \
         .config("spark.executor.memory", "64g") \
@@ -42,17 +43,17 @@ def etl_gcs_silver_to_bq():
         .config("spark.jars", "spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
 
     spark = configure_spark_with_delta_pip(builder).getOrCreate()
-    spark.sparkContext.setLogLevel("ERROR") 
+    spark.sparkContext.setLogLevel("ERROR")
     
     dfs_name = ['esports_tournaments',
-        'esports_games_genre',
-        'esports_games_awarding_prize_money'
-        ] 
+                'esports_games_genre',
+                'esports_games_awarding_prize_money'
+                ]
 
     for df_name in dfs_name:
         path = extract_from_gcs(df_name)
         wite_to_bq(spark, path, df_name)
 
+
 if __name__ == '__main__':
     etl_gcs_silver_to_bq()
-   
