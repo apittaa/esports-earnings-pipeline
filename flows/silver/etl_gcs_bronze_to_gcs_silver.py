@@ -98,6 +98,9 @@ def etl_gcs_bronze_to_gcs_silver() -> None:
         transformed_df = transform_columns_type(cleaned_df, df_name, df_types)
         silver_path = write_to_local(transformed_df, df_name)
         write_to_gcs(silver_path)
+    
+    # End spark session
+    spark.stop()
 
 
 if __name__ == '__main__':
