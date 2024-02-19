@@ -3,7 +3,7 @@ from pathlib import Path
 from delta import *
 from delta.tables import *
 
-from esports_schemas import ESPORTS_TOURNAMENTS_TYPES, ESPORTS_GAMES_GENRE_TYPES, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES
+from schemas.esports_schemas import ESPORTS_TOURNAMENTS_TYPES, ESPORTS_GAMES_GENRE_TYPES, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES
 
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket

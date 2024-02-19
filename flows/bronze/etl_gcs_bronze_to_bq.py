@@ -5,6 +5,9 @@ from pyspark.sql import SparkSession
 from prefect_gcp.cloud_storage import GcsBucket
 
 
+from schemas.esports_schemas import ESPORTS_TOURNAMENTS_SCHEMA, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES, ESPORTS_GAMES_GENRE_SCHEMA
+
+
 @task()
 def extract_from_gcs(dataset_file: str) -> str:
     """Download data from GCS"""
@@ -20,12 +23,13 @@ def extract_from_gcs(dataset_file: str) -> str:
 
 
 @task()
-def wite_to_bq(spark: pyspark, path: str, df_name: str) -> None:
+def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str) -> None:
     """write DataFrame to BigQuery"""
     df = spark.read.format('parquet').load(path)
     df.write.format("bigquery") \
             .option("writeMethod", "direct") \
             .option('table', f'esports_bronze.{df_name}') \
+            .option("schema", schema) \
             .mode('overwrite') \
             .save()
 
@@ -41,14 +45,14 @@ def etl_gcs_bronze_to_bq():
         .config("spark.jars", "spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
         .getOrCreate()
     
-    dfs_name = ['esports_tournaments',
-                'esports_games_genre',
-                'esports_games_awarding_prize_money'
-                ]
+    dfs_name = {'esports_tournaments': ESPORTS_TOURNAMENTS_SCHEMA,
+                'esports_games_genre': ESPORTS_GAMES_GENRE_SCHEMA,
+                'esports_games_awarding_prize_money': ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES
+                }
 
-    for df_name in dfs_name:
-        path = extract_from_gcs(df_name)
-        wite_to_bq(spark, path, df_name)
+    for df, schema in dfs_name.items():
+        path = extract_from_gcs(df)
+        wite_to_bq(spark, path, df, schema)
     
     # End spark session    
     spark.stop()

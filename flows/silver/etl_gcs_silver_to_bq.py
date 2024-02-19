@@ -6,6 +6,8 @@ from prefect_gcp.cloud_storage import GcsBucket
 
 import pyspark
 
+from schemas.esports_schemas import ESPORTS_TOURNAMENTS_SCHEMA, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES, ESPORTS_GAMES_GENRE_SCHEMA
+
 
 @task()
 def extract_from_gcs(dataset_file: str) -> str:
@@ -22,12 +24,13 @@ def extract_from_gcs(dataset_file: str) -> str:
 
 
 @task()
-def wite_to_bq(spark: pyspark, path: Path, df_name: str) -> None:
+def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str) -> None:
     """write DataFrame to BigQuery"""
     df = spark.read.format('delta').load(path)
     df.write.format("bigquery") \
             .option("writeMethod", "direct") \
             .option('table', f'esports_silver.{df_name}') \
+            .option("schema", schema) \
             .mode('overwrite') \
             .save()
 
@@ -36,7 +39,7 @@ def wite_to_bq(spark: pyspark, path: Path, df_name: str) -> None:
 def etl_gcs_silver_to_bq():
     """The main ETL function"""
    
-    builder = pyspark.sql.SparkSession.builder.appName("test") \
+    builder = pyspark.sql.SparkSession.builder.appName("esports_tournaments_silver") \
         .config("spark.executor.memory", "64g") \
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
@@ -45,14 +48,14 @@ def etl_gcs_silver_to_bq():
     spark = configure_spark_with_delta_pip(builder).getOrCreate()
     spark.sparkContext.setLogLevel("ERROR")
     
-    dfs_name = ['esports_tournaments',
-                'esports_games_genre',
-                'esports_games_awarding_prize_money'
-                ]
+    dfs_name = {'esports_tournaments': ESPORTS_TOURNAMENTS_SCHEMA,
+                'esports_games_genre': ESPORTS_GAMES_GENRE_SCHEMA,
+                'esports_games_awarding_prize_money': ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES
+                }
 
-    for df_name in dfs_name:
-        path = extract_from_gcs(df_name)
-        wite_to_bq(spark, path, df_name)
+    for df, schema in dfs_name.items():
+        path = extract_from_gcs(df)
+        wite_to_bq(spark, path, df, schema)
         
     # End spark session
     spark.stop()
