@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 
 import pandas as pd
 
+from google.cloud import storage
+
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
 
@@ -37,22 +39,48 @@ def write_to_gcs(path: str) -> None:
     gcs_block.upload_from_folder(
         from_folder=path,
         to_folder=path
+    )  
+
+
+def extract_from_gcs(dataset_file: str) -> str:
+    """Download data from GCS"""
+    gcs_path = f"data/bronze/{dataset_file}"
+    local_path = ""
+    gcs_block = GcsBucket.load("esports")
+    gcs_block.get_directory(
+        from_path=gcs_path,
+        local_path=local_path
     )
 
+    return gcs_path
 
-def get_tournament_offset() -> int:
+
+def get_tournament_offset(credentials: str, bucket: str) -> int | None:
     """Get the offset from a file."""
-    try:
-        gcs_block = GcsBucket.load('esports')
-        gcs_block.download_object_to_path(
-            from_path='data/bronze/offset/offset.parquet',
-            to_path='data/bronze/offset/offset.parquet')
-        with open("data/bronze/offset/offset.parquet", "r") as offset_file:
-            offset = int(offset_file.read())
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        offset = 0  # or handle the error in a way that makes sense for your use case
-    return offset
+    print("Starting get offset")
+    gcp_credentials = credentials
+    client = storage.Client.from_service_account_json(json_credentials_path=gcp_credentials)
+    gcs_bucket = storage.Bucket(client, bucket)
+    blob = gcs_bucket.blob('data/bronze/offset/offset.parquet')
+    
+    print("Checking blob")
+    if blob.exists() is False:
+        print("Blob does not exist")
+        offset = 0
+        print(offset)
+        return offset
+    else:
+        try:
+            print("Starting Try block")
+            gcs_block = GcsBucket.load('esports')
+            gcs_block.download_object_to_path(
+                from_path='data/bronze/offset/offset.parquet',
+                to_path='data/bronze/offset/offset.parquet')
+            with open("data/bronze/offset/offset.parquet", "r") as offset_file:
+                offset = int(offset_file.read())
+                return offset
+        except Exception as e:
+            return print(f"An error occurred: {e}")
 
 
 def write_tournament_offset(offset: int) -> None:
@@ -65,8 +93,8 @@ def write_tournament_offset(offset: int) -> None:
     )
 
 
-@task(retries=3)
-def get_tournaments_data(spark: pyspark, api_key: str) -> None:
+@task(retries=3, log_prints=True)
+def get_tournaments_data(spark: pyspark, api_key: str, credentials: str, bucket: str) -> None:
     """Retrieve data from the API."""
     
     # Disable warnings
@@ -80,7 +108,7 @@ def get_tournaments_data(spark: pyspark, api_key: str) -> None:
     tournaments_endpoint = "http://api.esportsearnings.com/v0/LookupRecentTournaments"
     
     # Add the offset function to set the offset
-    offset = get_tournament_offset()
+    offset = get_tournament_offset(credentials, bucket)
 
     while True:
         # Set up the request parameters
@@ -97,6 +125,7 @@ def get_tournaments_data(spark: pyspark, api_key: str) -> None:
             if response.status_code == 200:
                 # Check if response content is b'' (empty bytes)
                 if response.content == b'':
+                    print(response.content)
                     print("No more data to retrieve")
                     break
                 data = response.json()
@@ -127,8 +156,10 @@ def get_tournaments_data(spark: pyspark, api_key: str) -> None:
 def get_games_ids(spark: pyspark) -> list:
     """Get the game_ids from a file."""
     
+    esports_tournaments_path = extract_from_gcs("esports_tournaments")
+    
     # Read the parquet file to obtain the game_id values
-    parquet_data = spark.read.format('parquet').load('data/bronze/esports_tournaments')
+    parquet_data = spark.read.format('parquet').load(esports_tournaments_path)
 
     # Extract the game_id column values into game_ids
     game_ids = parquet_data.select('GameId').distinct().rdd.flatMap(lambda x: x).collect()
@@ -136,7 +167,7 @@ def get_games_ids(spark: pyspark) -> list:
     return game_ids
 
 
-@task(retries=3)
+@task(retries=3, log_prints=True)
 def get_games_awarding_prize_money_data(spark: pyspark, api_key: str) -> None:
     """Retrieve game data from the API."""
 
@@ -257,14 +288,17 @@ def etl_web_to_gcs() -> None:
     # Retrieve the API key from the .env file
     load_dotenv()
     API_KEY = os.getenv("API_KEY")
+    CREDENTIALS = os.getenv("LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH")
+    BUCKET = os.getenv("GCS_BUCKET_NAME")
 
     # Create a SparkSession
     spark = SparkSession.builder \
-        .appName("esports_tournaments_bronze") \
+        .appName("esports_tournaments_bronze_to_gcs") \
         .config("spark.executor.memory", "64g") \
+        .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
         .getOrCreate()
     
-    get_tournaments_data(spark, api_key=API_KEY)
+    get_tournaments_data(spark, api_key=API_KEY, credentials=CREDENTIALS, bucket=BUCKET)
     get_games_awarding_prize_money_data(spark, api_key=API_KEY)
     create_games_genre_df(spark)
     

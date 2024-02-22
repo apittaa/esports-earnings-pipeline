@@ -78,7 +78,7 @@ def etl_gcs_bronze_to_gcs_silver() -> None:
     """The main ETL function""" 
 
     #  Create a spark session with Delta
-    builder = pyspark.sql.SparkSession.builder.appName("esports_tournaments_silver") \
+    builder = pyspark.sql.SparkSession.builder.appName("esports_tournaments_silver_to_gcs") \
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
 

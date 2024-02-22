@@ -1,3 +1,7 @@
+import os
+
+from dotenv import load_dotenv
+
 from prefect import flow, task
 
 import pyspark
@@ -23,10 +27,11 @@ def extract_from_gcs(dataset_file: str) -> str:
 
 
 @task()
-def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str) -> None:
+def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str, credentials: str) -> None:
     """write DataFrame to BigQuery"""
     df = spark.read.format('parquet').load(path)
     df.write.format("bigquery") \
+            .option("credentialsFile", credentials) \
             .option("writeMethod", "direct") \
             .option('table', f'esports_bronze.{df_name}') \
             .option("schema", schema) \
@@ -37,12 +42,17 @@ def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str) -> None:
 @flow()
 def etl_gcs_bronze_to_bq():
     """The main ETL function"""  
+       
+    load_dotenv()
+    GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+    LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH = os.getenv("LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH")
     
     # Create a SparkSession
     spark = SparkSession.builder \
-        .appName("esports_tournaments_bronze") \
+        .appName("esports_tournaments_bronze_to_bq") \
+        .config("parentProject", GCP_PROJECT_ID) \
         .config("spark.executor.memory", "64g") \
-        .config("spark.jars", "spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
+        .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
         .getOrCreate()
     
     dfs_name = {'esports_tournaments': ESPORTS_TOURNAMENTS_SCHEMA,
@@ -52,7 +62,7 @@ def etl_gcs_bronze_to_bq():
 
     for df, schema in dfs_name.items():
         path = extract_from_gcs(df)
-        wite_to_bq(spark, path, df, schema)
+        wite_to_bq(spark, path, df, schema, LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH)
     
     # End spark session    
     spark.stop()

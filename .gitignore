@@ -167,6 +167,10 @@ credentials/
 
 # Terraform environment variables
 terraform/terraform.tfvars
+terraform/.terraform
+terraform/.terraform.tfstate.lock.info
+terraform/terraform.tfstate
+terraform/*.backup
 
 # VsCode
 .vscode/

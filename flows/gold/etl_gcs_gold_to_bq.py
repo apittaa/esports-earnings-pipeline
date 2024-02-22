@@ -6,7 +6,7 @@ from prefect_gcp.cloud_storage import GcsBucket
 
 import pyspark
 
-from schemas.esports_schemas import ESPORTS_GAMES_AWARDING_PRIZE_MONEY_WITH_GENRE_SCHEMA, ESPORTS_TOURNAMENTS__WITH_GENRE_SCHEMA
+from .schemas.esports_schemas import ESPORTS_GAMES_AWARDING_PRIZE_MONEY_WITH_GENRE_SCHEMA, ESPORTS_TOURNAMENTS__WITH_GENRE_SCHEMA
 
 
 def extract_from_gcs(dataset_file: str) -> str:
@@ -42,7 +42,7 @@ def etl_gcs_gold_to_bq():
         .config("spark.executor.memory", "64g") \
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-        .config("spark.jars", "spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
+        .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
 
     spark = configure_spark_with_delta_pip(builder).getOrCreate()
     spark.sparkContext.setLogLevel("ERROR") 
