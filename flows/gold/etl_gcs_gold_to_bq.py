@@ -6,7 +6,7 @@ from prefect_gcp.cloud_storage import GcsBucket
 
 import pyspark
 
-from .schemas.esports_schemas import ESPORTS_GAMES_AWARDING_PRIZE_MONEY_WITH_GENRE_SCHEMA, ESPORTS_TOURNAMENTS__WITH_GENRE_SCHEMA
+from schemas.esports_schemas import ESPORTS_GAMES_AWARDING_PRIZE_MONEY_WITH_GENRE_SCHEMA, ESPORTS_TOURNAMENTS__WITH_GENRE_SCHEMA
 
 
 def extract_from_gcs(dataset_file: str) -> str:
