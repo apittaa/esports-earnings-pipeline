@@ -38,7 +38,7 @@ def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str) -> None:
 def etl_gcs_gold_to_bq():
     """The main ETL function"""  
    
-    builder = pyspark.sql.SparkSession.builder.appName("test") \
+    builder = pyspark.sql.SparkSession.builder.appName("esports_tournaments_gold_to_bq") \
         .config("spark.executor.memory", "64g") \
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
