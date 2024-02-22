@@ -1,3 +1,7 @@
+import os
+
+from dotenv import load_dotenv
+
 from delta import *
 from delta.tables import *
 
@@ -23,10 +27,11 @@ def extract_from_gcs(dataset_file: str) -> str:
 
 
 @task()
-def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str) -> None:
+def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str, credentials: str) -> None:
     """write DataFrame to BigQuery"""
     df = spark.read.format('delta').load(path)
     df.write.format("bigquery") \
+            .option("credentialsFile", credentials) \
             .option("writeMethod", "direct") \
             .option('table', f'esports_gold.{df_name}_with_genre') \
             .option("schema", schema) \
@@ -37,9 +42,14 @@ def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str) -> None:
 @flow()
 def etl_gcs_gold_to_bq():
     """The main ETL function"""  
+    
+    load_dotenv()
+    GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+    LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH = os.getenv("LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH")
    
     builder = pyspark.sql.SparkSession.builder.appName("esports_tournaments_gold_to_bq") \
         .config("spark.executor.memory", "64g") \
+        .config("parentProject", GCP_PROJECT_ID) \
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
         .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
@@ -53,7 +63,7 @@ def etl_gcs_gold_to_bq():
 
     for df, schema in dfs_name.items():
         path = extract_from_gcs(df)
-        wite_to_bq(spark, path, df, schema)
+        wite_to_bq(spark, path, df, schema, LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH)
 
     # End spark session
     spark.stop()
