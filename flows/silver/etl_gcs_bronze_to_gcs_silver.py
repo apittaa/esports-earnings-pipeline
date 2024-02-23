@@ -74,18 +74,8 @@ def clean_data(spark: pyspark, path: str) -> DataFrame:
 
 
 @flow()
-def etl_gcs_bronze_to_gcs_silver() -> None:
-    """The main ETL function""" 
-
-    #  Create a spark session with Delta
-    builder = pyspark.sql.SparkSession.builder.appName("esports_tournaments_silver_to_gcs") \
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-        .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
-
-    # Create spark context
-    spark = configure_spark_with_delta_pip(builder).getOrCreate()
-    spark.sparkContext.setLogLevel("ERROR")
+def etl_gcs_bronze_to_gcs_silver(spark) -> None:
+    """The main ETL function"""
     
     dfs = {
         'esports_tournaments': ESPORTS_TOURNAMENTS_TYPES,
@@ -100,9 +90,6 @@ def etl_gcs_bronze_to_gcs_silver() -> None:
         silver_path = write_to_local(transformed_df, df_name)
         write_to_gcs(silver_path)
     
-    # End spark session
-    spark.stop()
-
 
 if __name__ == '__main__':
     etl_gcs_bronze_to_gcs_silver()
