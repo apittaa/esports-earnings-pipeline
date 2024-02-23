@@ -1,13 +1,7 @@
-import os
-
-from dotenv import load_dotenv
-
 from prefect import flow, task
 
 import pyspark
-from pyspark.sql import SparkSession
 from prefect_gcp.cloud_storage import GcsBucket
-
 
 from schemas.esports_schemas import ESPORTS_TOURNAMENTS_SCHEMA, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES, ESPORTS_GAMES_GENRE_SCHEMA
 
@@ -40,20 +34,8 @@ def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str, credentials
 
 
 @flow()
-def etl_gcs_bronze_to_bq():
-    """The main ETL function"""  
-       
-    load_dotenv()
-    GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
-    LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH = os.getenv("LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH")
-    
-    # Create a SparkSession
-    spark = SparkSession.builder \
-        .appName("esports_tournaments_bronze_to_bq") \
-        .config("parentProject", GCP_PROJECT_ID) \
-        .config("spark.executor.memory", "64g") \
-        .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
-        .getOrCreate()
+def etl_gcs_bronze_to_bq(spark, credentials):
+    """The main ETL function"""
     
     dfs_name = {'esports_tournaments': ESPORTS_TOURNAMENTS_SCHEMA,
                 'esports_games_genre': ESPORTS_GAMES_GENRE_SCHEMA,
@@ -62,11 +44,8 @@ def etl_gcs_bronze_to_bq():
 
     for df, schema in dfs_name.items():
         path = extract_from_gcs(df)
-        wite_to_bq(spark, path, df, schema, LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH)
+        wite_to_bq(spark, path, df, schema, credentials)
     
-    # End spark session    
-    spark.stop()
-
 
 if __name__ == '__main__':
     etl_gcs_bronze_to_bq()

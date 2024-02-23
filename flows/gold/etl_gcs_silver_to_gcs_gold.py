@@ -1,3 +1,7 @@
+import os
+
+from dotenv import load_dotenv
+
 from pathlib import Path
 
 from delta import *
@@ -67,8 +71,12 @@ def join_dfs(spark: pyspark, dfs_path: dict) -> dict:
 def etl_gcs_silver_to_gcs_gold() -> None:
     """The main ETL function"""
 
+    load_dotenv()
+    GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+
     #  Create a spark session with Delta
     builder = pyspark.sql.SparkSession.builder.appName("esports_tournaments_gold_to_gcs") \
+        .config("parentProject", GCP_PROJECT_ID) \
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
         .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \

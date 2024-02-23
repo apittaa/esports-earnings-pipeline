@@ -283,27 +283,12 @@ def create_games_genre_df(spark: pyspark):
 
 
 @flow()
-def etl_web_to_gcs() -> None:
-    """The main ETL function"""  
-    # Retrieve the API key from the .env file
-    load_dotenv()
-    API_KEY = os.getenv("API_KEY")
-    CREDENTIALS = os.getenv("LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH")
-    BUCKET = os.getenv("GCS_BUCKET_NAME")
-
-    # Create a SparkSession
-    spark = SparkSession.builder \
-        .appName("esports_tournaments_bronze_to_gcs") \
-        .config("spark.executor.memory", "64g") \
-        .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
-        .getOrCreate()
+def etl_web_to_gcs(spark, api_key: str, credentials: str, bucket: str) -> None:
+    """The main ETL function"""
     
-    get_tournaments_data(spark, api_key=API_KEY, credentials=CREDENTIALS, bucket=BUCKET)
-    get_games_awarding_prize_money_data(spark, api_key=API_KEY)
+    get_tournaments_data(spark, api_key, bucket, credentials)
+    get_games_awarding_prize_money_data(spark, api_key)
     create_games_genre_df(spark)
-    
-    # End the SparkSession
-    spark.stop()
     
 
 if __name__ == '__main__':
