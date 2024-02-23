@@ -1,7 +1,3 @@
-import os
-
-from dotenv import load_dotenv
-
 from delta import *
 from delta.tables import *
 
