@@ -1,7 +1,3 @@
-import os
-
-from dotenv import load_dotenv
-
 from delta import *
 from delta.tables import *
 
@@ -40,22 +36,8 @@ def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str, credentials
             
             
 @flow()
-def etl_gcs_gold_to_bq():
+def etl_gcs_gold_to_bq(spark, credentials: str):
     """The main ETL function"""  
-    
-    load_dotenv()
-    GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
-    LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH = os.getenv("LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH")
-   
-    builder = pyspark.sql.SparkSession.builder.appName("esports_tournaments_gold_to_bq") \
-        .config("spark.executor.memory", "64g") \
-        .config("parentProject", GCP_PROJECT_ID) \
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-        .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
-
-    spark = configure_spark_with_delta_pip(builder).getOrCreate()
-    spark.sparkContext.setLogLevel("ERROR") 
     
     dfs_name = {'esports_tournaments': ESPORTS_TOURNAMENTS__WITH_GENRE_SCHEMA, 
                 'esports_games_awarding_prize_money': ESPORTS_GAMES_AWARDING_PRIZE_MONEY_WITH_GENRE_SCHEMA
@@ -63,10 +45,7 @@ def etl_gcs_gold_to_bq():
 
     for df, schema in dfs_name.items():
         path = extract_from_gcs(df)
-        wite_to_bq(spark, path, df, schema, LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH)
-
-    # End spark session
-    spark.stop()
+        wite_to_bq(spark, path, df, schema, credentials)
 
 
 if __name__ == '__main__':
