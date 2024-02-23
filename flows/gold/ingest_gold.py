@@ -1,5 +1,8 @@
 import os
 
+from delta import *
+from delta.tables import *
+
 from dotenv import load_dotenv
 
 from prefect import flow
