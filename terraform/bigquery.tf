@@ -76,7 +76,7 @@ resource "google_bigquery_dataset" "dataset_gold" {
   location   = var.REGION
 }
 
-resource "google_bigquery_table" "esports_tournaments_with_genre_gold_table" {
+resource "google_bigquery_table" "esports_tournaments_gold_table" {
   dataset_id = var.DATASET_GOLD
   project    = var.PROJECT_ID
   table_id   = var.ESPORTS_TOURNAMENTS_GOLD
@@ -85,7 +85,7 @@ resource "google_bigquery_table" "esports_tournaments_with_genre_gold_table" {
   ]
 }
 
-resource "google_bigquery_table" "esports_games_awarding_prize_money_with_genre_gold_table" {
+resource "google_bigquery_table" "esports_games_awarding_prize_money_gold_table" {
   dataset_id = var.DATASET_GOLD
   project    = var.PROJECT_ID
   table_id   = var.ESPORTS_GAMES_AWARDING_PRIZE_MONEY_GOLD
