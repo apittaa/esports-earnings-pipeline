@@ -163,7 +163,7 @@ cython_debug/
 data/
 
 # GCP credentials
-credentials/
+credentials/*
 
 # Terraform environment variables
 terraform/terraform.tfvars
