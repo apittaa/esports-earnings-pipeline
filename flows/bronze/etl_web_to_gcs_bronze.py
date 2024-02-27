@@ -35,7 +35,7 @@ def write_to_local(df: DataFrame, dataset_file: str) -> str:
 
 def write_to_gcs(path: str) -> None:
     """Upload local parquet file to Google Cloud Storage"""
-    gcs_block = GcsBucket.load("esports")
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.upload_from_folder(
         from_folder=path,
         to_folder=path
@@ -46,7 +46,7 @@ def extract_from_gcs(dataset_file: str) -> str:
     """Download data from GCS"""
     gcs_path = f"data/bronze/{dataset_file}"
     local_path = ""
-    gcs_block = GcsBucket.load("esports")
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.get_directory(
         from_path=gcs_path,
         local_path=local_path
@@ -86,7 +86,7 @@ def get_tournament_offset(credentials: str, bucket: str) -> int | None:
 def write_tournament_offset(offset: int) -> None:
     with open("data/bronze/offset/offset.parquet", "w") as offset_file:
         offset_file.write(str(offset))
-    gcs_block = GcsBucket.load("esports")
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.upload_from_folder(
         from_folder='data/bronze/offset',
         to_folder='data/bronze/offset'

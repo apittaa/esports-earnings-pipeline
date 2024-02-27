@@ -13,7 +13,7 @@ def extract_from_gcs(dataset_file: str) -> str:
     """Download data from GCS"""
     gcs_path = f"data/gold/{dataset_file}"
     local_path = ""
-    gcs_block = GcsBucket.load("esports")
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.get_directory(
         from_path=gcs_path,
         local_path=local_path
