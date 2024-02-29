@@ -15,7 +15,7 @@ from etl_gcs_gold_to_bq import etl_gcs_gold_to_bq
 def main_flow_gold():
     """The main flow function"""
     
-    load_dotenv()
+    load_dotenv(override=True)
     GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
     CREDENTIALS = os.getenv("LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH")
    

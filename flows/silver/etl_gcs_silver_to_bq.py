@@ -6,7 +6,7 @@ from prefect_gcp.cloud_storage import GcsBucket
 
 import pyspark
 
-from schemas.esports_schemas import ESPORTS_TOURNAMENTS_SCHEMA, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES, ESPORTS_GAMES_GENRE_SCHEMA
+from schemas.esports_schemas import ESPORTS_TOURNAMENTS_SCHEMA, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_SCHEMA, ESPORTS_GAMES_GENRE_SCHEMA
 
 
 @task()
@@ -42,7 +42,7 @@ def etl_gcs_silver_to_bq(spark, credentials: str) -> None:
     
     dfs_name = {'esports_tournaments': ESPORTS_TOURNAMENTS_SCHEMA,
                 'esports_games_genre': ESPORTS_GAMES_GENRE_SCHEMA,
-                'esports_games_awarding_prize_money': ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES
+                'esports_games_awarding_prize_money': ESPORTS_GAMES_AWARDING_PRIZE_MONEY_SCHEMA
                 }
 
     for df, schema in dfs_name.items():

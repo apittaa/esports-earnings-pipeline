@@ -3,7 +3,7 @@ from prefect import flow, task
 import pyspark
 from prefect_gcp.cloud_storage import GcsBucket
 
-from schemas.esports_schemas import ESPORTS_TOURNAMENTS_SCHEMA, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES, ESPORTS_GAMES_GENRE_SCHEMA
+from schemas.esports_schemas import ESPORTS_TOURNAMENTS_SCHEMA, ESPORTS_GAMES_AWARDING_PRIZE_MONEY_SCHEMA, ESPORTS_GAMES_GENRE_SCHEMA
 
 
 @task()
@@ -27,11 +27,11 @@ def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str, credentials
     df.write.format("bigquery") \
             .option("credentialsFile", credentials) \
             .option("writeMethod", "direct") \
-            .option('table', f'esports_bronze.{df_name}') \
             .option("schema", schema) \
-            .mode('overwrite') \
+            .option("table", f'esports_bronze.{df_name}') \
+            .mode("overwrite") \
             .save()
-
+    
 
 @flow()
 def etl_gcs_bronze_to_bq(spark, credentials):
@@ -39,12 +39,12 @@ def etl_gcs_bronze_to_bq(spark, credentials):
     
     dfs_name = {'esports_tournaments': ESPORTS_TOURNAMENTS_SCHEMA,
                 'esports_games_genre': ESPORTS_GAMES_GENRE_SCHEMA,
-                'esports_games_awarding_prize_money': ESPORTS_GAMES_AWARDING_PRIZE_MONEY_TYPES
+                'esports_games_awarding_prize_money': ESPORTS_GAMES_AWARDING_PRIZE_MONEY_SCHEMA
                 }
 
     for df, schema in dfs_name.items():
         path = extract_from_gcs(df)
-        wite_to_bq(spark, path, df, schema, credentials)
+        wite_to_bq(spark, path, df, schema=schema, credentials=credentials)
     
 
 if __name__ == '__main__':
