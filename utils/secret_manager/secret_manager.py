@@ -1,9 +1,18 @@
+import os
 import json
 
-from dotenv import dotenv_values
+from dotenv import dotenv_values, load_dotenv
 
 from google.cloud import secretmanager
 from google.api_core.exceptions import PermissionDenied, NotFound
+
+
+load_dotenv(override=True)
+
+# Example usage:
+PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+SECRET_ID = os.getenv("GCP_SECRET_ID")
+env_file_path = ".env"
 
 
 def upload_env_to_secret_manager(project_id, secret_id, env_file_path, service_account_file=None):
@@ -40,40 +49,29 @@ def upload_env_to_secret_manager(project_id, secret_id, env_file_path, service_a
                 client.create_secret(
                     parent=parent,
                     secret_id=secret_id,
-                    secret={"replication":{"automatic":{}}}
+                    secret={"replication": {"automatic": {}}}
                 )
             except PermissionDenied:
-                return False, "Error: Permission denied. Make sure the service account has the necessary permissions to create secrets."
+                print("Error: Permission denied. Make sure the service account has the necessary permissions to create secrets.")
 
-        # Create the payload with all key-value pairs from the .env file
-        # payload = '\n'.join(f"{key}={value}" for key, value in env_file.items())
+        # Create the payload .env file
+        payload = json.dumps(dict(env_file))
 
         # Create the secret version
         parent = f"projects/{project_id}/secrets/{secret_id}"
-        response = client.add_secret_version(parent=parent, payload={"data": json.dumps(dict(env_file)).encode('utf-8')})
+        response = client.add_secret_version(parent=parent, payload={"data": payload.encode('utf-8')})
         print(f'Secret version {response.name} created.')
 
         print("All secrets uploaded to Secret Manager successfully.")
-        return True, None
 
     except FileNotFoundError:
-        error_message = f"Error: The .env file '{env_file_path}' does not exist."
-        return False, error_message
+        print(f"Error: The .env file '{env_file_path}' does not exist.")
 
     except Exception as e:
-        error_message = f"Error: An unexpected error occurred: {str(e)}"
-        return False, error_message
+        print(f"Error: An unexpected error occurred: {str(e)}")
+    
 
-# Example usage:
-project_id = "esports-earnings-pipeline"
-secret_id = "esports-pipeline-env"
-env_file_path = ".env"
-
-success, message = upload_env_to_secret_manager(project_id, secret_id, env_file_path)
-if success:
-    print("Secrets uploaded successfully.")
-else:
-    print(f"Failed to upload secrets: {message}")
+upload_env_to_secret_manager(PROJECT_ID, SECRET_ID, env_file_path)
 
 
 def load_secret(project_id, secret_id, version_id="latest", service_account_file=None):
@@ -104,18 +102,11 @@ def load_secret(project_id, secret_id, version_id="latest", service_account_file
         response = client.access_secret_version(name=secret_name)
         payload = response.payload.data.decode('UTF-8')
 
-        return payload, None
+        return payload
 
     except Exception as e:
-        error_message = f"Error: An unexpected error occurred: {str(e)}"
-        return None, error_message
+        print(f"Error: An unexpected error occurred: {str(e)}")
 
-# Example usage:
-project_id = "esports-earnings-pipeline"
-secret_id = "esports-pipeline-env"
 
-secret_value, error_message = load_secret(project_id, secret_id)
-if secret_value is not None:
-    print("Secret loaded successfully:", json.loads(secret_value)["API_KEY"])
-else:
-    print("Failed to load secret:", error_message)
+# secret_value = load_secret(PROJECT_ID, SECRET_ID)
+# print(json.loads(secret_value))
