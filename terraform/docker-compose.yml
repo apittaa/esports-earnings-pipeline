@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  # Terraform
+  terraform:
+    image: hashicorp/terraform:1.7.4 # Use the current directory for the Dockerfile
+    volumes:
+      - .:/infra
+      - ~/.ssh:/root/.ssh # Mounting the SSH directory
+      - ./../credentials:/credentials # Mounting the crdentials folder
+    working_dir: /infra
+    env_file:
+      - terraform.tfvars # Read environment variables from the terraform.tfvars
