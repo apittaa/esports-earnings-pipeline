@@ -24,7 +24,7 @@ def main_flow_gold():
         .config("parentProject", GCP_PROJECT_ID) \
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
-        .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
+        .config("spark.jars", "utils/spark/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
 
     spark = configure_spark_with_delta_pip(builder).getOrCreate()
     spark.sparkContext.setLogLevel("ERROR") 

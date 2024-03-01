@@ -3,11 +3,12 @@ push: ...
 pull: ...
 
 deployments:
-  - name: esports-bronze
-    entrypoint: flows/bronze/deploy_ingest_bronze.py:main_flow_bronze
+  - name: "esports-bronze"
+    entrypoint: "flows/bronze/deploy_ingest_bronze.py:main_flow_bronze"
     work_pool:
-        name: default-agent-pool
-        work_queue_name: default
+        name: "default-agent-pool"
+        work_queue_name: "default"
+    env_file: ".env"
 
   - name: esports-silver
     entrypoint: flows/silver/deploy_ingest_silver.py:main_flow_silver

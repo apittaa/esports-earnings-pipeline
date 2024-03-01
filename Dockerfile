@@ -11,5 +11,5 @@ RUN pip install -r docker_requirements.txt --trusted-host pypi.python.org --no-c
 COPY flows /opt/prefect/flows
 COPY data /opt/prefect/data
 # COPY .env /opt/prefect
-COPY credentials /opt/prefect/credentials
+# COPY credentials /opt/prefect/credentials
 COPY utils /opt/prefect/utils
