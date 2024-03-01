@@ -26,7 +26,7 @@ def main_flow_bronze():
         .appName("esports_tournaments_bronze") \
         .config("parentProject", GCP_PROJECT_ID) \
         .config("spark.executor.memory", "64g") \
-        .config("spark.jars", "utils/spark/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
+        .config("spark.jars", "utils/spark-bigquery-with-dependencies_2.12-0.34.0.jar") \
         .getOrCreate()
     
     etl_web_to_gcs(spark, API_KEY, BUCKET, CREDENTIALS)
