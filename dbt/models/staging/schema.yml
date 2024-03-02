@@ -1,0 +1,127 @@
+version: 2
+
+sources:
+  - name: staging
+    database: esports-earnings-pipeline
+    schema: esports_gold
+
+    tables:
+      - name: esports_tournaments
+      - name: esports_games_awarding_prize_money
+
+models:
+  - name: stg_esports_tournaments
+    description: >
+      Data includes esports earnings filed with the Esports Earnings community-driven competitive gaming resource based on freely available public information. 
+      The accuracy of this website is dependent on user contributions.
+      Data since 1998.
+    columns: 
+      - name: GameId
+        description: >
+          The unique identifier for each game in the dataset.
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+      - name: TournamentId
+        description: >
+          The unique identifier for each tournament.
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+      - name: TournamentName
+        description: >
+          Name of the tournament.
+        tests:
+          - not_null:
+              severity: warn
+      - name: StartDate
+        description: >
+          The starting date of the tournament.
+        tests:
+          - not_null:
+              severity: warn
+      - name: EndDate
+        description: >
+          The ending date of the tournament.
+        tests:
+          - not_null:
+              severity: warn
+      - name: Location
+        description: >
+          The location where the tournament took place.
+        tests:
+          - not_null:
+              severity: warn
+      - name: Teamplay
+        description: >
+          Boolean determining whether the tournament was held between individuals (1v1, FFA) or teams (2v2, 3v3, 4v4, 5v5, etc.).
+        tests:
+          - not_null:
+              severity: warn
+      - name: TotalUSDPrize
+        description: >
+          The total prize money in USD awarded in the tournament.
+        tests:
+          - not_null:
+              severity: warn
+      - name: GameName
+        description: >
+          The game being played in the tournament.
+        tests:
+          - not_null:
+              severity: warn
+      - name: Genre
+        description: >
+          the genre or category of the game (e.g., MOBA, FPS, Battle Royale, etc.).
+        tests:
+          - not_null:
+              severity: warn
+
+  - name: stg_esports_games_awarding_prize_money
+    description: >
+      Data includes esports games awarding prize money filed with the Esports Earnings community-driven competitive gaming resource based on freely available public information. 
+      The accuracy of this website is dependent on user contributions.
+      Data since 1998.
+    columns: 
+      - name: GameId
+        description: >
+          The unique identifier for each game in the dataset.
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+      - name: GameName
+        description: >
+          The name of the esports game.
+        tests:
+          - not_null:
+              severity: warn
+      - name: TotalUSDPrize
+        description: >
+          The total prize money awarded across all tournaments for this game, measured in USD.
+        tests:
+          - not_null:
+              severity: warn
+      - name: TotalTournaments
+        description: >
+          The total number of tournaments held for this game.
+        tests:
+          - not_null:
+              severity: warn
+      - name: TotalPlayers
+        description: >
+          The total number of players who participated in tournaments for this game.
+        tests:
+          - not_null:
+              severity: warn
+      - name: Genre
+        description: >
+          The genre or category of the game (e.g., MOBA, FPS, Battle Royale, etc.).
+        tests:
+          - not_null:
+              severity: warn
