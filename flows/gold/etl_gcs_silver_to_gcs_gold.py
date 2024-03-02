@@ -48,13 +48,13 @@ def write_to_gcs(path: Path) -> None:
 @task()
 def join_dfs(spark: pyspark, dfs_path: dict) -> dict:
     
-    esports_tournaments = spark.read.format('parquet').load(dfs_path['esports_tournaments'])
-    esports_games_genre = spark.read.format('parquet').load(dfs_path['esports_games_genre'])
-    esports_games_awarding_prize_money = spark.read.format('parquet').load(dfs_path['esports_games_awarding_prize_money'])
+    esports_tournaments = spark.read.format('delta').load(dfs_path['esports_tournaments'])
+    esports_games_genre = spark.read.format('delta').load(dfs_path['esports_games_genre'])
+    esports_games_awarding_prize_money = spark.read.format('delta').load(dfs_path['esports_games_awarding_prize_money'])
     
-    esports_tournaments_genre = esports_tournaments.join(esports_games_genre.select("GameId", "GameName", "Genre"), on="GameId", how="inner")
+    esports_tournaments_genre = esports_tournaments.join(esports_games_genre.select("GameId", "GameName", "Genre"), on="GameId", how="left")
     
-    esports_games_awarding_prize_money_genre = esports_games_awarding_prize_money.join(esports_games_genre.select("GameId", "Genre"), on="GameId", how="inner")
+    esports_games_awarding_prize_money_genre = esports_games_awarding_prize_money.join(esports_games_genre.select("GameId", "Genre"), on="GameId", how="left")
     
     joined_dfs = {'esports_tournaments': esports_tournaments_genre, 
                   'esports_games_awarding_prize_money': esports_games_awarding_prize_money_genre

@@ -31,7 +31,7 @@ def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str, credentials
             .option("writeMethod", "direct") \
             .option('table', f'esports_gold.{df_name}') \
             .option("schema", schema) \
-            .mode('overwrite') \
+            .mode("overwrite") \
             .save()
             
             
