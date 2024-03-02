@@ -3,7 +3,7 @@ from prefect.infrastructure.container import DockerContainer
 from ingest_gold import main_flow_gold
 
 
-docker_container_block = DockerContainer.load("esports-pipeline")
+docker_container_block = DockerContainer.load("docker-esports-pipeline")
 
 esports_gold_deploy = Deployment.build_from_flow(
     flow=main_flow_gold,

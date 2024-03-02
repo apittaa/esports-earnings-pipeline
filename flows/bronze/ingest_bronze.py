@@ -15,7 +15,7 @@ def main_flow_bronze():
     """The main flow function"""
     
     # Retrieve env variables
-    load_dotenv()
+    load_dotenv(override=True)
     API_KEY = os.getenv("API_KEY")
     BUCKET = os.getenv("GCS_BUCKET_NAME")
     CREDENTIALS = os.getenv("LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH")

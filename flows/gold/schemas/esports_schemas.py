@@ -25,7 +25,7 @@ ESPORTS_GAMES_AWARDING_PRIZE_MONEY_SCHEMA = StructType([
     StructField('TotalUSDPrize', FloatType(), nullable=True)
 ])
 
-ESPORTS_TOURNAMENTS__WITH_GENRE_SCHEMA = StructType([
+ESPORTS_TOURNAMENTS_WITH_GENRE_SCHEMA = StructType([
     StructField('GameId', IntegerType(), nullable=True),
     StructField('TournamentId', IntegerType(), nullable=True),
     StructField('TournamentName', StringType(), nullable=True),

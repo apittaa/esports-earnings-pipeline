@@ -16,7 +16,7 @@ def extract_from_gcs(dataset_file: str) -> str:
     """Download data from GCS"""
     gcs_path = f"data/silver/{dataset_file}"
     local_path = ""
-    gcs_block = GcsBucket.load("esports")
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.get_directory(
         from_path=gcs_path,
         local_path=local_path
@@ -38,7 +38,7 @@ def write_to_local(df: DataFrame, dataset_file: str) -> str:
 @task()
 def write_to_gcs(path: Path) -> None:
     """Upload local parquet file to Google Cloud Storage"""
-    gcs_block = GcsBucket.load("esports")
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.upload_from_folder(
         from_folder=path,
         to_folder=path
@@ -48,13 +48,13 @@ def write_to_gcs(path: Path) -> None:
 @task()
 def join_dfs(spark: pyspark, dfs_path: dict) -> dict:
     
-    esports_tournaments = spark.read.format('parquet').load(dfs_path['esports_tournaments'])
-    esports_games_genre = spark.read.format('parquet').load(dfs_path['esports_games_genre'])
-    esports_games_awarding_prize_money = spark.read.format('parquet').load(dfs_path['esports_games_awarding_prize_money'])
+    esports_tournaments = spark.read.format('delta').load(dfs_path['esports_tournaments'])
+    esports_games_genre = spark.read.format('delta').load(dfs_path['esports_games_genre'])
+    esports_games_awarding_prize_money = spark.read.format('delta').load(dfs_path['esports_games_awarding_prize_money'])
     
-    esports_tournaments_genre = esports_tournaments.join(esports_games_genre.select("GameId", "GameName", "Genre"), on="GameId", how="inner")
+    esports_tournaments_genre = esports_tournaments.join(esports_games_genre.select("GameId", "GameName", "Genre"), on="GameId", how="left")
     
-    esports_games_awarding_prize_money_genre = esports_games_awarding_prize_money.join(esports_games_genre.select("GameId", "Genre"), on="GameId", how="inner")
+    esports_games_awarding_prize_money_genre = esports_games_awarding_prize_money.join(esports_games_genre.select("GameId", "Genre"), on="GameId", how="left")
     
     joined_dfs = {'esports_tournaments': esports_tournaments_genre, 
                   'esports_games_awarding_prize_money': esports_games_awarding_prize_money_genre

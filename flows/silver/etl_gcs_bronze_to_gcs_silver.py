@@ -19,7 +19,7 @@ def extract_from_gcs(dataset_file: str) -> str:
     """Download data from GCS"""
     gcs_path = f"data/bronze/{dataset_file}"
     local_path = ""
-    gcs_block = GcsBucket.load("esports")
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.get_directory(
         from_path=gcs_path,
         local_path=local_path
@@ -41,7 +41,7 @@ def write_to_local(df: DataFrame, dataset_file: str) -> str:
 @task()
 def write_to_gcs(path: Path) -> None:
     """Upload local parquet file to Google Cloud Storage"""
-    gcs_block = GcsBucket.load("esports")
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.upload_from_folder(
         from_folder=path,
         to_folder=path

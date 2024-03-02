@@ -6,8 +6,6 @@ import urllib3
 
 from bs4 import BeautifulSoup
 
-from dotenv import load_dotenv
-
 import pandas as pd
 
 from google.cloud import storage
@@ -16,52 +14,51 @@ from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
 
 import pyspark
-from pyspark.sql import SparkSession, DataFrame
-import pyspark.sql.functions as F
+from pyspark.sql import DataFrame
 
 
 def write_to_local(df: DataFrame, dataset_file: str) -> str:
     """Get the offset from cloud storage."""
-    local_path = f"data/bronze/{dataset_file}"
     path = f"data/bronze/{dataset_file}"
     
     if dataset_file == "esports_tournaments":
-        df.coalesce(1).write.format("parquet").option("header", "true").mode("append").save(local_path)
+        df.coalesce(1).write.format("parquet").option("header", "true").mode("append").save(path)
     else:
-        df.coalesce(1).write.format("parquet").option("header", "true").mode("overwrite").save(local_path)
+        df.coalesce(1).write.format("parquet").option("header", "true").mode("overwrite").save(path)
     
     return path
 
 
 def write_to_gcs(path: str) -> None:
     """Upload local parquet file to Google Cloud Storage"""
-    gcs_block = GcsBucket.load("esports")
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.upload_from_folder(
         from_folder=path,
         to_folder=path
-    )  
-
+    )
+    
 
 def extract_from_gcs(dataset_file: str) -> str:
     """Download data from GCS"""
-    gcs_path = f"data/bronze/{dataset_file}"
-    local_path = ""
-    gcs_block = GcsBucket.load("esports")
+    path = f"data/bronze/{dataset_file}"
+
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.get_directory(
-        from_path=gcs_path,
-        local_path=local_path
+        from_path=path,
+        local_path=path
     )
 
-    return gcs_path
+    return path
 
 
-def get_tournament_offset(credentials: str, bucket: str) -> int | None:
+def get_tournament_offset(credentials: str, bucket: str) -> int:
     """Get the offset from a file."""
     print("Starting get offset")
     gcp_credentials = credentials
+    gcs_offset_path = 'data/bronze/offset/offset.parquet'
     client = storage.Client.from_service_account_json(json_credentials_path=gcp_credentials)
     gcs_bucket = storage.Bucket(client, bucket)
-    blob = gcs_bucket.blob('data/bronze/offset/offset.parquet')
+    blob = gcs_bucket.blob(gcs_offset_path)
     
     print("Checking blob")
     if blob.exists() is False:
@@ -72,24 +69,26 @@ def get_tournament_offset(credentials: str, bucket: str) -> int | None:
     else:
         try:
             print("Starting Try block")
-            gcs_block = GcsBucket.load('esports')
+            gcs_block = GcsBucket.load('gcs-bucket-esports-pipeline')
             gcs_block.download_object_to_path(
-                from_path='data/bronze/offset/offset.parquet',
-                to_path='data/bronze/offset/offset.parquet')
-            with open("data/bronze/offset/offset.parquet", "r") as offset_file:
+                from_path=gcs_offset_path,
+                to_path=gcs_offset_path)
+            with open(f"{gcs_offset_path}", "r") as offset_file:
                 offset = int(offset_file.read())
                 return offset
         except Exception as e:
             return print(f"An error occurred: {e}")
-
+        
 
 def write_tournament_offset(offset: int) -> None:
-    with open("data/bronze/offset/offset.parquet", "w") as offset_file:
+    local_offset_file_path = "data/bronze/offset/offset.parquet"
+    offset_path = "data/bronze/offset"
+    with open(local_offset_file_path, "w") as offset_file:
         offset_file.write(str(offset))
-    gcs_block = GcsBucket.load("esports")
+    gcs_block = GcsBucket.load("gcs-bucket-esports-pipeline")
     gcs_block.upload_from_folder(
-        from_folder='data/bronze/offset',
-        to_folder='data/bronze/offset'
+        from_folder=offset_path,
+        to_folder=offset_path
     )
 
 
@@ -156,13 +155,13 @@ def get_tournaments_data(spark: pyspark, api_key: str, credentials: str, bucket:
 def get_games_ids(spark: pyspark) -> list:
     """Get the game_ids from a file."""
     
-    esports_tournaments_path = extract_from_gcs("esports_tournaments")
+    path = extract_from_gcs("esports_tournaments")
     
     # Read the parquet file to obtain the game_id values
-    parquet_data = spark.read.format('parquet').load(esports_tournaments_path)
+    esports_tournaments_data = spark.read.format('parquet').load(path)
 
     # Extract the game_id column values into game_ids
-    game_ids = parquet_data.select('GameId').distinct().rdd.flatMap(lambda x: x).collect()
+    game_ids = esports_tournaments_data.select('GameId').distinct().rdd.flatMap(lambda x: x).collect()
     
     return game_ids
 
