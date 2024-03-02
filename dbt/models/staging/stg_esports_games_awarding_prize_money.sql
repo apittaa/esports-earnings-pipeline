@@ -23,7 +23,7 @@ select
 from esports_games_awarding_prize_money
 where rn = 1
 
-{% if var('is_test_run', default=true) %}
+{% if var('is_test_run', default=false) %}
 
     limit 100
 
