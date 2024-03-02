@@ -16,7 +16,7 @@ select
     -- Tournament info
     cast(TournamentName as string) as TournamentName,
     cast(Location as string) as Location,
-    cast(Teamplay as string) as Teamplay,
+    cast(Teamplay as integer) as Teamplay,
     cast(TotalUSDPrize as FLOAT64) as TotalUSDPrize,
 
     -- Game info
