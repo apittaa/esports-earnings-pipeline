@@ -176,3 +176,7 @@ terraform/*.backup
 
 # yml
 .secrets.yml
+
+# dbt
+dbt_packages
+.user.yml

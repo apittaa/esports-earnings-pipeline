@@ -26,8 +26,8 @@ DBT_CLI_PROFILE_PROD_BLOCK = os.getenv("DBT_CLI_PROFILE_PROD_BLOCK")
 DBT_CLI_COMMAND_DEV_BLOCK = os.getenv("DBT_CLI_COMMAND_DEV_BLOCK")
 DBT_CLI_COMMAND_PROD_BLOCK = os.getenv("DBT_CLI_COMMAND_PROD_BLOCK")
 
-BQ_DATASET_DEV = str(os.getenv("GCP_ENV_DATASET"))
-BQ_DATASET_PROD = str(os.getenv("GCP_PROD_DATASET"))
+BQ_DATASET_DEV = str(os.getenv("BQ_ENV_DATASET"))
+BQ_DATASET_PROD = str(os.getenv("BQ_PROD_DATASET"))
 DBT_TARGET_DEV_BLOCK = os.getenv("DBT_CLI_TARGET_DEV_BLOCK")
 DBT_TARGET_PROD_BLOCK = os.getenv("DBT_CLI_TARGET_PROD_BLOCK")
 DBT_PROFILE_DEV_BLOCK = os.getenv("DBT_CLI_PROFILE_DEV_BLOCK")
@@ -70,7 +70,7 @@ target_configs_dev.save(DBT_TARGET_DEV_BLOCK, overwrite=True)
 
 # 2.PROFILE
 dbt_cli_profile_dev = DbtCliProfile(
-    name="esports_earnings_pipeline",  # find this in the profiles.yml or under name in dbt_project.yml
+    name="default",  # find this in the profiles.yml or under name in dbt_project.yml
     target="dev",
     target_configs=target_configs_dev,
 )
@@ -82,7 +82,7 @@ dbt_cli_command_dev_block = DBT_CLI_COMMAND_DEV_BLOCK
 
 # dbt_cli_profile_dev = DbtCliProfile.load(dbt_cli_profile_dev_block)
 dbt_core_operation_dev = DbtCoreOperation(
-    commands=["dbt deps", "dbt build --var 'is_test_run: false'"],
+    commands=["dbt deps", "dbt build"],
     dbt_cli_profile=dbt_cli_profile_dev,
     working_dir=DBT_DIR_PATH,
     project_dir=DBT_DIR_PATH,
@@ -100,7 +100,7 @@ target_configs_prod.save(DBT_TARGET_PROD_BLOCK, overwrite=True)
 
 # 2.PROFILE
 dbt_cli_profile_prod = DbtCliProfile(
-    name="esports_earnings_pipeline",  # find this in the profiles.yml or under name in dbt_project.yml
+    name="default",  # find this in the profiles.yml or under name in dbt_project.yml
     target="prod",
     target_configs=target_configs_prod,
 )
@@ -110,7 +110,7 @@ dbt_cli_profile_prod.save(DBT_PROFILE_PROD_BLOCK, overwrite=True)
 dbt_cli_command_prod_block = DBT_CLI_COMMAND_PROD_BLOCK
 
 dbt_core_operation_prod = DbtCoreOperation(
-    commands=["dbt deps", "dbt build --var 'is_test_run: false'"],
+    commands=["dbt deps", "dbt build"],
     dbt_cli_profile=dbt_cli_profile_prod,
     working_dir=DBT_DIR_PATH,
     project_dir=DBT_DIR_PATH,

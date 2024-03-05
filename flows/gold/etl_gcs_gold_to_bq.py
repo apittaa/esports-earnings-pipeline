@@ -2,6 +2,7 @@ from delta import *
 from delta.tables import *
 
 from prefect import flow, task
+from prefect_dbt.cli import DbtCoreOperation
 from prefect_gcp.cloud_storage import GcsBucket
 
 import pyspark
@@ -33,10 +34,22 @@ def wite_to_bq(spark: pyspark, path: str, df_name: str, schema: str, credentials
             .option("schema", schema) \
             .mode("overwrite") \
             .save()
+   
+            
+@task()
+def dbt_transform(dbt_dev_block: str, dbt_prod_block: str, target_dbt: str) -> None:
+    """Run dbt transformations on data in BQ by building dbt models"""
+    print('LOGGING: dbt TRANSFORMATIONS STARTING')
+    if target_dbt == 'dev':
+        dbt_op = DbtCoreOperation.load(dbt_dev_block)
+    else:
+        dbt_op = DbtCoreOperation.load(dbt_prod_block)
+    dbt_op.run()
+    print('LOGGING: dbt TRANSFORMATIONS COMPLETE')
             
             
 @flow()
-def etl_gcs_gold_to_bq(spark, credentials: str):
+def etl_gcs_gold_to_bq(spark, credentials: str, dbt_dev_block: str, dbt_prod_block: str, target_dbt: str) -> None:
     """The main ETL function"""  
     
     dfs_name = {'esports_tournaments': ESPORTS_TOURNAMENTS_WITH_GENRE_SCHEMA, 
@@ -46,6 +59,7 @@ def etl_gcs_gold_to_bq(spark, credentials: str):
     for df, schema in dfs_name.items():
         path = extract_from_gcs(df)
         wite_to_bq(spark, path, df, schema, credentials)
+    dbt_transform(dbt_dev_block, dbt_prod_block, target_dbt)
 
 
 if __name__ == '__main__':

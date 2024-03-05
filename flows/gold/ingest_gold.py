@@ -18,6 +18,8 @@ def main_flow_gold():
     load_dotenv(override=True)
     GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
     CREDENTIALS = os.getenv("LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH")
+    DBT_DEV_BLOCK = os.getenv("DBT_CLI_COMMAND_DEV_BLOCK")
+    DBT_PROD_BLOCK = os.getenv("DBT_CLI_COMMAND_PROD_BLOCK")
    
     builder = SparkSession.builder.appName("esports_tournaments_gold_to_bq") \
         .config("spark.executor.memory", "64g") \
@@ -30,7 +32,7 @@ def main_flow_gold():
     spark.sparkContext.setLogLevel("ERROR") 
     
     etl_gcs_silver_to_gcs_gold(spark)
-    etl_gcs_gold_to_bq(spark, CREDENTIALS)
+    etl_gcs_gold_to_bq(spark, CREDENTIALS, DBT_DEV_BLOCK, DBT_PROD_BLOCK, target_dbt='dev')
     
     # End spark session
     spark.stop()
