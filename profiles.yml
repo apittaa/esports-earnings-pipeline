@@ -5,7 +5,7 @@ default:
       type: bigquery
       method: service-account
       project: esports-earnings-pipeline
-      dataset: esports_gold
+      dataset: dbt_devpitta
       threads: 4
       priority: interactive
       keyfile: credentials/esports-earnings-pipeline-google-credentials.json
