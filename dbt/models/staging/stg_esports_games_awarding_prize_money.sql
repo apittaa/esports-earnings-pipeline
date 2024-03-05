@@ -9,7 +9,7 @@ with esports_games_awarding_prize_money as
 )
 select 
     -- identifiers
-    cast(({{dbt_utils.surrogate_key(['GameId', 'GameName'])}}) as string) as case_id,
+    cast(({{dbt_utils.generate_surrogate_key(['GameId', 'GameName'])}}) as string) as case_id,
     cast(GameId as integer) as GameId,
 
     -- Tournament info

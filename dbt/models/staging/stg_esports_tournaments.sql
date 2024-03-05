@@ -9,7 +9,7 @@ with esports_tournaments as
 )
 select 
     -- identifiers
-    cast(({{dbt_utils.surrogate_key(['GameId', 'StartDate'])}}) as string) as case_id,
+    cast(({{dbt_utils.generate_surrogate_key(['GameId', 'StartDate'])}}) as string) as case_id,
     cast(GameId as integer) as GameId,
     cast(TournamentId as integer) as TournamentId,
 
