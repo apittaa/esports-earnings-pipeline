@@ -1,0 +1,19 @@
+default:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: esports-earnings-pipeline
+      dataset: esports_gold
+      threads: 4
+      priority: interactive
+      keyfile: credentials/esports-earnings-pipeline-google-credentials.json
+    prod:
+      type: bigquery
+      method: service-account
+      project: esports-earnings-pipeline
+      dataset: esports_gold
+      threads: 4
+      priority: interactive
+      keyfile: credentials/esports-earnings-pipeline-google-credentials.json

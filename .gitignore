@@ -173,3 +173,6 @@ terraform/*.backup
 
 # VsCode
 .vscode/
+
+# yml
+.secrets.yml
