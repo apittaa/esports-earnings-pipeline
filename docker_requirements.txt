@@ -5,3 +5,7 @@ pyspark==3.4.0
 python-dotenv==1.0.0
 pandas==2.2.0
 google-cloud-storage==2.14.0
+google-cloud-bigquery-storage==2.24.0
+dbt-bigquery==1.7.6
+dbt-core==1.7.9
+piperider==0.41.0
