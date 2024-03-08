@@ -13,3 +13,6 @@ COPY data /opt/prefect/data
 COPY .env /opt/prefect
 COPY credentials /opt/prefect/credentials
 COPY utils /opt/prefect/utils
+COPY dbt /opt/prefect/dbt
+
+# ENTRYPOINT ["prefect", "agent", "start", "-q", "default"]

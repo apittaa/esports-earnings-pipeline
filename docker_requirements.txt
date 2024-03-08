@@ -1,6 +1,7 @@
 beautifulsoup4==4.12.2
 delta-spark==2.4.0
 prefect-gcp==0.5.5
+prefect-dbt==0.4.1
 pyspark==3.4.0
 python-dotenv==1.0.0
 pandas==2.2.0
