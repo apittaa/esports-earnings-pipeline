@@ -1,0 +1,40 @@
+# ESPORTS ONLINE CREDENTIALS
+API_KEY="your_api_key"
+
+# GCP CREDENTIALS
+GCP_PROJECT_ID="your_gcp_project_id"
+GCP_SECRET_ID="your_gcp_secret_id"
+GCP_SERVICE_ACCOUNT_NAME="your_service_account_name"
+GCP_REGION="your_gcp_region"
+GCP_ZONE="your_gcp_zone"
+GCP_SERVICE_ACCOUNT_INFO="your_service_account_as_string"
+
+GCS_BUCKET_NAME="your_gcs_bucket_name"
+
+LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH="your_local_service_account_credential_path"
+
+# BQ CREDENTIALS
+BQ_ENV_DATASET="dbt_devpitta"
+BQ_PROD_DATASET="esports_gold"
+
+# PREFECT CREDENTIALS
+PREFECT_CLOUD_API="your_prefect_cloud_api"
+GCP_CREDENTIALS_BLOCK="gcp-credentials-esports-pipeline"
+GCS_BUCKET_BLOCK="gcs-bucket-esports-pipeline"
+DOCKER_BLOCK="docker-esports-pipeline"
+BQ_BLOCK="bq-esports-pipeline"
+DBT_CLI_TARGET_DEV_BLOCK="dbt-cli-target-dev-block-esports-pipeline"
+DBT_CLI_TARGET_PROD_BLOCK="dbt-cli-target-prod-block-esports-pipeline"
+DBT_CLI_PROFILE_DEV_BLOCK="dbt-cli-profile-dev-block-esports-pipeline"
+DBT_CLI_PROFILE_PROD_BLOCK="dbt-cli-profile-prod-block-esports-pipeline"
+DBT_CLI_COMMAND_DEV_BLOCK="dbt-cli-command-dev-block-esports-pipeline"
+DBT_CLI_COMMAND_PROD_BLOCK="dbt-cli-command-prod-block-esports-pipeline"
+
+# DBT ENVIRONMENT CREDENTIALS 
+DBT_ENV_PROJECT_DIR="dbt"
+DBT_ENV_BQ_TABLE_ESPORTS_TOURNAMENTS="esports_tournaments"
+DBT_ENV_BQ_TABLE_ESPORTS_GAMES_AWARDING_PRIZE_MONEY="esports_games_awarding_prize_money"
+DBT_ENV_BQ_TABLE_STG_ESPORTS_TOURNAMENTS="stg_esports_tournaments"
+DBT_ENV_BQ_TABLE_STG_ESPORTS_GAMES_AWARDING_PRIZE_MONEY="stg_esports_games_awarding_prize_money"
+DBT_ENV_BQ_TABLE_FACT_ESPORTS_TOURNAMENTS="fact_esports_tournaments"
+DBT_ENV_BQ_TABLE_FACT_GAMES_AWARDING_PRIZE_MONEY="fact_esports_games_awarding_prize_money"
