@@ -88,24 +88,19 @@ Steps in the ELT are as follows:
     * Transforms Data from BigQuery using ***dbt-core*** and creates the following in the dev/prod Dataset (along with Tests and Documentation)
         - The views `stg_esports_tournaments` and `stg_esports_games_awarding_prize_money`
         - Fact tables `fact_esports_teams_tournaments` and `fact_esports_individuals_tournaments`
-    
-    <br>
 
     * DOCUMENTATION ON DBT-CLOUD: 
-    <br>
-    ![image](images/dbt_documentation.png)
+![dbt-documentation](images/dbt_documentation.png)
 
     * LINEAGE GRAPH ON DBT-CLOUD:
-    <br>
-    ![image](images/dbt_lineage_graph.png)
+![dbt-lineage](images/dbt_lineage_graph.png)
 
     * ELT PIPELINE VISUALIZATION  ON PREFECT CLOUD 
-    <br>
-    ![image](images/prefect_flow_bronze.png)
-    <br>
-    ![image](images/prefect_flow_silver.png)
-    <br>
-    ![image](images/prefect_flow_gold.png)
+![Prefect ETL Bronze](images/prefect_flow_bronze.png)
+
+![Prefect ETL Silver](images/prefect_flow_silver.png)
+
+![Prefect ETL Gold](images/prefect_flow_gold.png)
 
 6. Transformed Data from BigQuery is used for Reporting and Visualization using Looker Studio to produce Dashboards
 
