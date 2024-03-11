@@ -1,19 +1,19 @@
 # GCP VARIABLES
-PROJECT_ID = "your_gcp_project_id"
-SERVICE_ACCOUNT_NAME = "your_gcp_service_account_name"
-REGION = "your_gcp_region"
-ZONE = "your_gcp_zone"
+PROJECT_ID = "esports-earnings-pipeline"
+SERVICE_ACCOUNT_NAME = "esports-earnings-pipeline"
+REGION = "us-central1"
+ZONE = "us-central1-c"
 
-BUCKET_NAME = "your_gcs_bucket_name"
+BUCKET_NAME = "esports-data-lake"
 
-SERVICE_ACCOUNT_CREDENTIAL_PATH = "your_service_account_credential_path"
+SERVICE_ACCOUNT_CREDENTIAL_PATH = "credentials/esports-earnings-pipeline-google-credentials.json"
 
-COMPUTE_ENGINE_NAME = "your_compute_engine_name"
+COMPUTE_ENGINE_NAME = "esports-pipeline-t"
 COMPUTE_ENGINE_MACHINE_TYPE = "e2-standard-4"
 COMPUTE_ENGINE_MACHINE_IMAGE = "ubuntu-2204-jammy-v20231213a"
-COMPUTE_ENGINE_ZONE = "your_compute_engine_zone"
+COMPUTE_ENGINE_ZONE = "us-central1-c"
 COMPUTE_ENGINE_SSH_USER = "your_compute_engine_ssh_user"
-SSH_PUB_KEY_FILE = "~/.ssh/your_ssh_pub_key_file"
+SSH_PUB_KEY_FILE = "~/.ssh/esports-pipeline.pub"
 
 # BIGQUERY VARIABLES
 DATASET_BRONZE = "esports_bronze"

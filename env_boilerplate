@@ -2,19 +2,19 @@
 API_KEY="your_api_key"
 
 # GCP CREDENTIALS
-GCP_PROJECT_ID="your_gcp_project_id"
-GCP_SECRET_ID="your_gcp_secret_id"
-GCP_SERVICE_ACCOUNT_NAME="your_service_account_name"
-GCP_REGION="your_gcp_region"
-GCP_ZONE="your_gcp_zone"
-GCP_SERVICE_ACCOUNT_INFO="your_service_account_as_string"
+GCP_PROJECT_ID="esports-earnings-pipeline"
+GCP_SECRET_ID="esports-pipeline-env"
+GCP_SERVICE_ACCOUNT_NAME="esports_earnings_pipeline"
+GCP_REGION="us-central1"
+GCP_ZONE="us-central1-c"
+GCP_SERVICE_ACCOUNT_INFO="your_service_account_as_string - use /blocks/convert_credentials_to_string.py"
 
-GCS_BUCKET_NAME="your_gcs_bucket_name"
+GCS_BUCKET_NAME="esports-data-lake-esports-earnings-pipeline"
 
-LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH="your_local_service_account_credential_path"
+LOCAL_SERVICE_ACCOUNT_CREDENTIAL_PATH="credentials/esports-earnings-pipeline-google-credentials.json"
 
 # BQ CREDENTIALS
-BQ_ENV_DATASET="dbt_devpitta"
+BQ_ENV_DATASET="esports_dbt"
 BQ_PROD_DATASET="esports_gold"
 
 # PREFECT CREDENTIALS
