@@ -12,7 +12,6 @@ The goal of this project is to build an end-to-end batch data pipeline on Esport
 - [Architecture](#architecture)
 - [ELT Steps](#elt-steps)
 - [The Dashboard](#the-dashboard)
-- [Key Findings](#key-findings)
 - [Reproduction](#reproduction)
 - [Conclusion](#conclusion)
 - [Future Work](#future-work)
@@ -94,19 +93,19 @@ Steps in the ELT are as follows:
 
     * DOCUMENTATION ON DBT-CLOUD: 
     <br>
-    ![dbt-documentation](images/dbt_documentation.png)
+    ![image](images/dbt_documentation.png)
 
     * LINEAGE GRAPH ON DBT-CLOUD:
     <br>
-    ![dbt-lineage](images/dbt_lineage_graph.png)
+    ![image](images/dbt_lineage_graph.png)
 
     * ELT PIPELINE VISUALIZATION  ON PREFECT CLOUD 
     <br>
-    ![Prefect ETL Bronze](images/prefect_flow_bronze.png)
+    ![image](images/prefect_flow_bronze.png)
     <br>
-    ![Prefect ETL Silver](images/prefect_flow_silver.png)
+    ![image](images/prefect_flow_silver.png)
     <br>
-    ![Prefect ETL Gold](images/prefect_flow_gold.png)
+    ![image](images/prefect_flow_gold.png)
 
 6. Transformed Data from BigQuery is used for Reporting and Visualization using Looker Studio to produce Dashboards
 
