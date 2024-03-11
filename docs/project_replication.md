@@ -1,7 +1,6 @@
 # Project Replication
 ---                                         
->## Execute the below on your LOCAL MACHINE
-<br>
+## Execute the below on your LOCAL MACHINE
 
 ### ***REQUIREMENTS*** - Local Machine
 ---
@@ -37,6 +36,7 @@
     ```bash
         sudo docker run hello-world
     ```
+    
 3. Install Anaconda
     * Visit [Anaconda](https://www.anaconda.com/download/)
     * Select Linux
@@ -66,22 +66,23 @@
             cd ~
             source .bashrc
         ```
-
+        
 4. Create a new environment
     ```bash
         conda create --name esports-pipeline python=3.10
         source .bashrc
     ```
-
+    
 5. Activate the new environment
     ```bash
         conda activate esports-pipeline
     ```
-
+    
 6. Install requirements in the new environment
     ```bash
         pip install -r requirements.txt
     ```
+    
 ### ***ENV VARIABLES SETUP***
 
 1. Rename `env_boilerplate` file to .env and change the default values as necessary
@@ -159,7 +160,8 @@ For this project, we'll use a free version (up to $300 credits).
 
 3. Tag Docker Image
     ```bash
-        docker image tag esports-prefect \             us-central1-docker.pkg.dev/esports-earnings-prefect/quickstart-docker-repo/esports-prefect
+        docker image tag esports-prefect \
+        us-central1-docker.pkg.dev/esports-earnings-prefect/quickstart-docker-repo/esports-prefect
     ```
 
 4. Push Docker Image to Artifact Registry
@@ -202,12 +204,12 @@ For this project, we'll use a free version (up to $300 credits).
 3. Go to [Prefect Website](https://www.prefect.io/cloud) and Login
 
 4. Edit dbt Core Operation blocks (dev & prod)
-![image](images/prefect_blocks.png)
+![image](../images/prefect_blocks.png)
     * Change Project Dir to /opt/prefect/dbt
     * Change Working Directory to /opt/prefect/dbt
 
 5. Create a new Work Pool named esports-pipeline
-![image](images/prefect_work_pools.png)
+![image](../images/prefect_work_pools.png)
     * Create a Work Pool with the following configs:
         * Type: Cloud Run V2:push
         * CPU: 2000m
@@ -219,19 +221,19 @@ For this project, we'll use a free version (up to $300 credits).
     * After created change the Work Queue name from `default` to `esports`
 
 6. Edit Deployments
-![image](images/prefect_deployments.png)
+![image](../images/prefect_deployments.png)
     * Edit all the deployments and change the Work Pool and Work Queue from default-agent-pool and default to esports-pipeline and esports respectively
     * Schedule the esports-bronze deployment 
-![image](images/prefect_deployment_schedule.png)
+![image](../images/prefect_deployment_schedule.png)
 
 7. Create Automations
-![image](images/prefect_automations.png)
+![image](../images/prefect_automations.png)
     * run-esports-silver
-![image](images/prefect_automation_silver_trigger.png)
-![image](images/prefect_automation_silver_actions.png)
+![image](../images/prefect_automation_silver_trigger.png)
+![image](../images/prefect_automation_silver_actions.png)
     * run-esports-gold
-![image](images/prefect_automation_gold_trigger.png)
-![image](images/prefect_automation_gold_actions.png)
+![image](../images/prefect_automation_gold_trigger.png)
+![image](../images/prefect_automation_gold_actions.png)
 
 ### ***FINAL STATE***
 1. Now there should be 
