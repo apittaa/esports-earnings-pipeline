@@ -14,9 +14,6 @@ The goal of this project is to build an end-to-end batch data pipeline on Esport
 - [The Dashboard](#the-dashboard)
 - [Reproduction](#reproduction)
 - [Conclusion](#conclusion)
-- [Future Work](#future-work)
-- [References & Resources](#references--resources)
-
 
 ## Problem statement
 ---
@@ -117,13 +114,5 @@ You can recreate and run the project by following the step by step instructions 
 ## Conclusion
 ---
 Through this project we were able to successfully build a ELT pipeline end to end which is scheduled to run monthly. And as a result we have a monthly updated Esports Earnings which can be visualized via the Dashboard on Looker Studio. This helps us get some useful insights on the latest esports trends and patterns.
-
-
-## Future Work
----
-- Combine data about neighbourhoods and districts from other sources and make the reporting more rich.
-- Use DataProc to perform Spark job
-- Create a normalized data structure when using more data sources
-- Setup GCP Service Account and Permissions via Terraform
 
 [Back To Top](#esports-earnings-data-pipeline-a-data-engineering-project)

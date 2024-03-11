@@ -202,36 +202,36 @@ For this project, we'll use a free version (up to $300 credits).
 3. Go to [Prefect Website](https://www.prefect.io/cloud) and Login
 
 4. Edit dbt Core Operation blocks (dev & prod)
-    ![image](images/prefect_blocks.png)
+![image](images/prefect_blocks.png)
     * Change Project Dir to /opt/prefect/dbt
     * Change Working Directory to /opt/prefect/dbt
 
 5. Create a new Work Pool named esports-pipeline
-    ![image](images/prefect_work_pools.png)
+![image](images/prefect_work_pools.png)
     * Create a Work Pool with the following configs:
-        ** Type: Cloud Run V2:push
-        ** CPU: 2000m
-        ** Image Name: us-central1-docker.pkg.dev/esports-earnings-pipeline/esports-earnings-repo/esports-prefect
-        ** Memory: 8Gi
-        ** Region: us-central1
-        ** GCP Credentials: select your GCP Credentials block
-        ** Max Retries: 3
+        * Type: Cloud Run V2:push
+        * CPU: 2000m
+        * Image Name: us-central1-docker.pkg.dev/esports-earnings-pipeline/esports-earnings-repo/esports-prefect
+        * Memory: 8Gi
+        * Region: us-central1
+        * GCP Credentials: select your GCP Credentials block
+        * Max Retries: 3
     * After created change the Work Queue name from `default` to `esports`
 
 6. Edit Deployments
-    ![image](images/prefect_deployments.png)
+![image](images/prefect_deployments.png)
     * Edit all the deployments and change the Work Pool and Work Queue from default-agent-pool and default to esports-pipeline and esports respectively
     * Schedule the esports-bronze deployment 
-    ![image](images/prefect_deployment_schedule.png)
+![image](images/prefect_deployment_schedule.png)
 
 7. Create Automations
-    ![image](images/prefect_automations.png)
+![image](images/prefect_automations.png)
     * run-esports-silver
-    ![image](images/prefect_automation_silver_trigger.png)
-    ![image](images/prefect_automation_silver_actions.png)
+![image](images/prefect_automation_silver_trigger.png)
+![image](images/prefect_automation_silver_actions.png)
     * run-esports-gold
-    ![image](images/prefect_automation_gold_trigger.png)
-    ![image](images/prefect_automation_gold_actions.png)
+![image](images/prefect_automation_gold_trigger.png)
+![image](images/prefect_automation_gold_actions.png)
 
 ### ***FINAL STATE***
 1. Now there should be 
