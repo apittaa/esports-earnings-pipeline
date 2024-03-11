@@ -62,7 +62,7 @@ The ELT steps include:
 Pipeline
 
 
-![BATCH ELT Architecture](../images/esports_earnings_pipeline_etl.png)
+![BATCH ELT Architecture](images/esports_earnings_pipeline_etl.png)
 
 
 ## ELT Steps
@@ -87,17 +87,17 @@ Steps in the ELT are as follows:
         - Fact tables `fact_esports_teams_tournaments` and `fact_esports_individuals_tournaments`
 
     * DOCUMENTATION ON DBT-CLOUD: 
-![dbt-documentation](../images/dbt_documentation.png)
+![dbt-documentation](images/dbt_documentation.png)
 
     * LINEAGE GRAPH ON DBT-CLOUD:
-![dbt-lineage](../images/dbt_lineage_graph.png)
+![dbt-lineage](images/dbt_lineage_graph.png)
 
     * ELT PIPELINE VISUALIZATION  ON PREFECT CLOUD 
-![Prefect ETL Bronze](../images/prefect_flow_bronze.png)
+![Prefect ETL Bronze](images/prefect_flow_bronze.png)
 
-![Prefect ETL Silver](../images/prefect_flow_silver.png)
+![Prefect ETL Silver](images/prefect_flow_silver.png)
 
-![Prefect ETL Gold](../images/prefect_flow_gold.png)
+![Prefect ETL Gold](images/prefect_flow_gold.png)
 
 6. Transformed Data from BigQuery is used for Reporting and Visualization using Looker Studio to produce Dashboards
 
@@ -105,7 +105,7 @@ Steps in the ELT are as follows:
 ---
 The dashboard is accessible from [here](https://lookerstudio.google.com/s/tGQaUxF6-9U)
 
-![image](../images/report.png)
+![image](images/report.png)
 
 ## Reproduction:
 ---
