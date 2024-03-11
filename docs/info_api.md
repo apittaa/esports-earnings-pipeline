@@ -7,7 +7,7 @@ Here you will find links to the documentation pages of the API that were referen
 * [Main API Documentation Page](https://www.esportsearnings.com/apidocs) where you can find instructions on how to access Esports Earnings data via the Esports Earnings API
 * We are going to extract data via API KEY
 * Signup & Get API Key from the [Esports Earnings Website](https://www.esportsearnings.com/dev)
-* ![API_KEY Button](images/esports_earnings_api_key.png)
+* ![API_KEY Button](../images/esports_earnings_api_key.png)
 * Save the `API_KEY` to the .env file
 
 # INSTRUCTIONS TO GET YOUR PREFECT CLOUD API
